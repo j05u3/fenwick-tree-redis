@@ -5,11 +5,6 @@ Inspiration from:
 https://gist.github.com/jdp/5117101
 */
 
-export interface Slice {
-  a: number;
-  b: number;
-}
-
 export default class BinaryIndexedTree {
   backend: Backend;
 

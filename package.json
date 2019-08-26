@@ -50,17 +50,20 @@
     "node": ">=8.9"
   },
   "dependencies": {
+    "@types/redis": "^2.8.13",
+    "redis": "^2.8.0",
     "sha.js": "^2.4.11"
   },
   "devDependencies": {
+    "@bitjson/npm-scripts-info": "^1.0.0",
     "ava": "2.2.0",
     "codecov": "^3.5.0",
     "cz-conventional-changelog": "^2.1.0",
     "gh-pages": "^2.0.1",
     "npm-run-all": "^4.1.5",
-    "@bitjson/npm-scripts-info": "^1.0.0",
     "nyc": "^14.1.1",
     "prettier": "^1.18.2",
+    "redis-mock": "^0.46.0",
     "standard-version": "^6.0.1",
     "trash-cli": "^3.0.0",
     "tslint": "^5.18.0",
