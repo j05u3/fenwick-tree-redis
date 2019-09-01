@@ -7,3 +7,9 @@ hackerNews
 medium
 ...
 
+
+## dev
+
+`npm run watch`
+
+Once in a while I needed to `rm -rf build` to be able to run again. 

@@ -7,28 +7,9 @@ import { IncreaseQuery } from './backend';
 const redis = require("redis-mock");
 
 class RedisMockBackend extends RedisHashBackend {
-  
-  private selectDb(client: RedisClient, i: number): Promise<void> {
-    return new Promise((resolve, reject) => {
-      client.select(i, (err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
-  }
-
-  i: number;
-  public setDb(i: number) {
-    this.i = i;
-  }
 
   protected async getNewRedisClient(): Promise<RedisClient> {
-    const client = redis.createClient();
-    await this.selectDb(client, this.i);
-    return client;
+    return redis.createClient();
   }
 
   public async flushDb(): Promise<void> {
@@ -45,16 +26,15 @@ class RedisMockBackend extends RedisHashBackend {
   }
 }
 
-async function getMockBackendInstance(i: number) {
+async function getMockBackendInstance() {
   const backend = new RedisMockBackend(null, 1e6, "dummyKey");
   // clearing db (it is needed because all tests run on the same db)
-  backend.setDb(i);
   await backend.flushDb();
   return backend;
 }
 
-async function getBackendWithSomeValues(i: number): Promise<RedisMockBackend> {
-  const backend = await getMockBackendInstance(i);
+async function getBackendWithSomeValues(): Promise<RedisMockBackend> {
+  const backend = await getMockBackendInstance();
   await backend.increase([
     new IncreaseQuery(0, 3),
     new IncreaseQuery(1, 3),
@@ -64,41 +44,35 @@ async function getBackendWithSomeValues(i: number): Promise<RedisMockBackend> {
   return backend;
 }
 
-test('testIncrease00', async t => {
-  const backend = await getMockBackendInstance(0);
+test('tests', async t => {
+  // had to put all tests here because I couldn't find a way to make 
+  // redis-mock use a different and clean db for each test
+  let backend = await getMockBackendInstance();
   const r = await backend.increase([
-    new IncreaseQuery(0, 3),
-    new IncreaseQuery(1, 3),
+    new IncreaseQuery(0, 11),
+    new IncreaseQuery(1, 18),
   ]);
   t.is(r.length, 2);
-});
 
-// test('testIncreaseAndEmptyQuery', async t => {
-//   let backend = await getBackendWithSomeValues(2);
-//   t.deepEqual(await backend.read([]), []);
-// });
+  backend = await getBackendWithSomeValues();
+  t.deepEqual(await backend.read([]), []);
 
-test('testIncreaseAndQuery01', async t => {
-  let backend = await getBackendWithSomeValues(3);
+  backend = await getBackendWithSomeValues();
   t.deepEqual(await backend.read([0]), [3]);
+
+  backend = await getBackendWithSomeValues();
+  t.deepEqual(await backend.read([0, 1, 2, 3]), [3, 3, 4, 2]);
+
+  backend = await getBackendWithSomeValues();
+  t.deepEqual(await backend.read([0, 1, 2, 3, 4, 5]), [3, 3, 4, 2, 0, 0]);
+
+  backend = await getMockBackendInstance();
+  await backend.increase([
+    new IncreaseQuery(0, 3),
+    new IncreaseQuery(1, 3),
+    new IncreaseQuery(1, 1),
+    new IncreaseQuery(1, 2),
+  ]);
+  t.deepEqual(await backend.read([0, 1]), [3, 6]);
+
 });
-// test('testIncreaseAndQuery02', async t => {
-//   let backend = await getBackendWithSomeValues(4);
-//   t.deepEqual(await backend.read([0, 1, 2, 3]), [3, 3, 4, 2]);
-// });
-
-// test('testIncreaseAndQuery03', async t => {
-//   let backend = await getBackendWithSomeValues(5);
-//   t.deepEqual(await backend.read([0, 1, 2, 3, 4, 5]), [3, 3, 4, 2, 0, 0]);
-// });
-
-// test('testIncreaseAndQuery04', async t => {
-//   const backend = await getMockBackendInstance(1);
-//   await backend.increase([
-//     new IncreaseQuery(0, 3),
-//     new IncreaseQuery(1, 3),
-//     new IncreaseQuery(1, 1),
-//     new IncreaseQuery(1, 2),
-//   ]);
-//   t.deepEqual(await backend.read([0, 1]), [3, 6]);
-// });
