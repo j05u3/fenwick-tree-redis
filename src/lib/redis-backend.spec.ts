@@ -1,30 +1,7 @@
 import test from 'ava';
-import { RedisHashBackend } from './redis-backend';
-import { RedisClient } from 'redis';
 import { IncreaseQuery } from './backend';
+import RedisMockBackend from './redis-mock-backend';
 
-
-const redis = require("redis-mock");
-
-class RedisMockBackend extends RedisHashBackend {
-
-  protected async getNewRedisClient(): Promise<RedisClient> {
-    return redis.createClient();
-  }
-
-  public async flushDb(): Promise<void> {
-    const client = await this.getNewRedisClient();
-    return await new Promise((resolve, reject) => {
-      client.flushdb((err) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve();
-        }
-      });
-    });
-  }
-}
 
 async function getMockBackendInstance() {
   const backend = new RedisMockBackend(null, 1e6, "dummyKey");

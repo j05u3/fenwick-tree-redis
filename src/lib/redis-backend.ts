@@ -16,7 +16,7 @@ export const REDIS_MULTI_RESULT_NOT_OK = "REDIS_MULTI_RESULT_NOT_OK";
 export class RedisHashBackend implements Backend {
 
   constructor (
-    private redisCredentials: RedisCredentials, 
+    private redisCredentials: RedisCredentials | null, 
     public maximum: number, 
     public redisKey: string) {
   }
@@ -32,12 +32,15 @@ export class RedisHashBackend implements Backend {
   }
 
   protected async getNewRedisClient(): Promise<RedisClient> {
+    if (this.redisCredentials == null) {
+      return redis.createClient();
+    }
     return redis.createClient(this.redisCredentials.port, 
       this.redisCredentials.host);
   }
 
-  private async atomic(incQueries: IncreaseQuery[], 
-    readQueries: number[]): Promise< (number|null) []> {
+  private async atomic(incQueries: IncreaseQuery[] | null, 
+    readQueries: number[] | null): Promise< (number|null) []> {
     let client = await this.getNewRedisClient();
 
     return await new Promise((resolve, reject) => {

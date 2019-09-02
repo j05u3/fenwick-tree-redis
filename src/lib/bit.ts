@@ -1,4 +1,4 @@
-import { Backend, Int } from "./backend";
+import { Backend, Int, IncreaseQuery } from "./backend";
 
 /* 
 Inspiration from:
@@ -13,49 +13,59 @@ export default class BinaryIndexedTree {
   }
 
   private getReadQueries(ind: number) : number[] {
-    const queries = [];
+    const queries: number[] = [];
     for (; ind > 0; ind -= (ind & (-ind))) {
       queries.push(ind);
     }
     return queries;
   }
 
+  /**
+   * Gets the accumulated sum in the 'array' until "ind" (inclusive).
+   * Time: O(log(n))
+   * @param ind 0-indexed
+   */
   async query(ind: Int) : Promise<number> {
-    this.validateInd(ind);
+    ind++;
     const r = await this.backend.read(this.getReadQueries(ind));
     return r.reduce((ac, val) => ac + val);
   }
 
-  private validateInd(ind: Int) {
-    // TODO: should we just fail without and exception?
-    if (ind < 0 || ind > this.backend.maximum) throw "INVALID_INDEX";
-  }
-
+  /**
+   * Updates the ind-th element in the 'array'
+   * Note: if ind is greater than or equal backend.maximum this function won't do anything
+   * Time: O(log(n))
+   * @param ind 0-indexed
+   * @param val integer number
+   */
   async update(ind: Int, val: number) {
-    this.validateInd(ind);
-    let queries = [];
+    let queries: IncreaseQuery[] = [];
+    ind++;
     for (; ind <= this.backend.maximum; ind += (ind & (-ind))) {
-      queries.push({ind, val});
+      queries.push(new IncreaseQuery(ind, val));
     }
     await this.backend.increase(queries);
   }
 
   /**
-   * Inclusive on both bounds
-   * @param from 
-   * @param to
+   * If "to" is less than or equal "from" it returns zero
+   * Both indexed from zero.
+   * @param from Inclusive
+   * @param to Exclusive
    */
   async rangeQuery(from: Int, to: Int): Promise<number> {
-    const _to = to;
-    to = Math.max(from, _to);
-    from = Math.min(from, _to);
+    if (to <= from) return 0;
 
-    const fromResults = 
-    await this.backend.read(this.getReadQueries(from - 1));
-    const toResults = 
-    await this.backend.read(this.getReadQueries(to));
+    const fromReadQueries = this.getReadQueries(from);
+    const results = 
+    await this.backend.read(
+      fromReadQueries.concat(this.getReadQueries(to + 1)));
 
-    return toResults.reduce((ac, val) => ac + val)
-      - fromResults.reduce((ac, val) => ac + val);
+    return results.reduce((ac, val, i) => {
+      if (i < fromReadQueries.length) {
+        return ac - val;
+      }
+      return ac + val;
+    });
   }
 }
