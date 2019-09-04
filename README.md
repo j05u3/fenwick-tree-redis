@@ -1,7 +1,8 @@
 # fenwick-tree-redis
 
-Binary Indexed Tree (aka Fenwick Tree) implementation using a Redis backend
+Binary Indexed Tree (aka Fenwick Tree) implementation with a Redis backend
 
+Generated with [typescript-starter](https://www.npmjs.com/package/typescript-starter)
 
 ## development
 
