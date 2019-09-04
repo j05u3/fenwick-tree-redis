@@ -21,7 +21,8 @@ export default class BinaryIndexedTree {
   }
 
   /**
-   * Gets the accumulated sum in the 'array' until "ind" (inclusive).
+   * Gets the accumulated sum in the 'array' until `ind` (inclusive).
+   * 
    * Time: O(log(n))
    * @param ind 0-indexed
    */
@@ -32,8 +33,10 @@ export default class BinaryIndexedTree {
   }
 
   /**
-   * Increases the ind-th element in the 'array' in @param val
-   * Note: if @param ind is greater than or equal backend.maximum this function won't do anything
+   * Increases the ind-th element in the 'array' by `val`
+   * 
+   * Note: if `ind` is greater than or equal `backend.maximum` this function won't do anything
+   * 
    * Time: O(log(n))
    * @param ind 0-indexed
    * @param val integer number
@@ -48,8 +51,9 @@ export default class BinaryIndexedTree {
   }
 
   /**
-   * If "to" is less than or equal "from" it returns zero
+   * If "to" is less than or equal "from" it returns zero.
    * Both indexed from zero.
+   * 
    * Time: O(log(n))
    * @param from Inclusive
    * @param to Exclusive

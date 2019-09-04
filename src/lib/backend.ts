@@ -2,8 +2,8 @@ export type IndType = number; // maybe use bigint(?)
 export type ValType = number; // maybe use bigint(?) and maybe allow floating point values in the future
 
 /**
- * The backend must make the read and increase operations atomic. 
- * This is to make sure the next operations are atomic (not executing parts of one in the middle of the other):
+ * The backend must make the read and increase operations atomic (not executing parts of one in the middle of the other). 
+ * This is to make sure the next operations are atomic:
  *    * update(x, v) 
  *    * query(b) - query(a)
  */
