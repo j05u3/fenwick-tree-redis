@@ -8,7 +8,7 @@ export type ValType = number; // maybe use bigint(?) and maybe allow floating po
  *    * query(b) - query(a)
  */
 export interface Backend {
-  maximum: IndType;
+  readonly maximum: IndType;
   
   /**
    * The backend must make sure that the whole execution of these queries is atomic.
@@ -16,13 +16,13 @@ export interface Backend {
    * executing these read queries.
    * @param queries 
    */
-  read(queries: IndType[]): Promise<ValType[]>;
+  read(queries: readonly IndType[]): Promise<readonly ValType[]>;
 
   /**
    * The backend must make sure that each increase operation is atomic
    * @param queries 
    */
-  increase(queries: IncreaseQuery[]): Promise<any[]>;
+  increase(queries: readonly IncreaseQuery[]): Promise<readonly any[]>;
 }
 
 export class IncreaseQuery {

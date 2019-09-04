@@ -1,4 +1,4 @@
-import { Backend, IndType, IncreaseQuery, ValType } from "./backend";
+import { Backend, IncreaseQuery, IndType, ValType } from "./backend";
 
 /* 
 Inspiration from:
@@ -6,18 +6,10 @@ https://gist.github.com/jdp/5117101
 */
 
 export default class BinaryIndexedTree {
-  backend: Backend;
+  public readonly backend: Backend;
 
   constructor (backend: Backend) {
     this.backend = backend;
-  }
-
-  private getReadQueries(ind: IndType) : IndType[] {
-    const queries: IndType[] = [];
-    for (; ind > 0; ind -= (ind & (-ind))) {
-      queries.push(ind);
-    }
-    return queries;
   }
 
   /**
@@ -26,7 +18,7 @@ export default class BinaryIndexedTree {
    * Time: O(log(n))
    * @param ind 0-indexed
    */
-  async query(ind: IndType) : Promise<ValType> {
+  public async query(ind: IndType) : Promise<ValType> {
     ind++;
     const r = await this.backend.read(this.getReadQueries(ind));
     return r.reduce((ac, val) => ac + val);
@@ -41,7 +33,7 @@ export default class BinaryIndexedTree {
    * @param ind 0-indexed
    * @param val integer number
    */
-  async update(ind: IndType, val: ValType) {
+  public async update(ind: IndType, val: ValType) {
     const queries: IncreaseQuery[] = [];
     ind++;
     for (; ind <= this.backend.maximum; ind += (ind & (-ind))) {
@@ -58,8 +50,8 @@ export default class BinaryIndexedTree {
    * @param from Inclusive
    * @param to Exclusive
    */
-  async rangeQuery(from: IndType, to: IndType): Promise<ValType> {
-    if (to <= from) return 0;
+  public async rangeQuery(from: IndType, to: IndType): Promise<ValType> {
+    if (to <= from) { return 0; }
 
     const fromReadQueries = this.getReadQueries(from);
     const results = 
@@ -72,5 +64,13 @@ export default class BinaryIndexedTree {
       }
       return ac + val;
     });
+  }
+
+  private getReadQueries(ind: IndType) : readonly IndType[] {
+    const queries: IndType[] = [];
+    for (; ind > 0; ind -= (ind & (-ind))) {
+      queries.push(ind);
+    }
+    return queries;
   }
 }

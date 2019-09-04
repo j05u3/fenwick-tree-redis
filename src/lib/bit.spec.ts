@@ -1,7 +1,7 @@
 // tslint:disable:no-expression-statement
 import test from 'ava';
-import RedisMockBackend from './redis-mock-backend';
 import BinaryIndexedTree from './bit';
+import RedisMockBackend from './redis-mock-backend';
 
 
 test('tests', async t => {

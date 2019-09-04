@@ -1,16 +1,12 @@
-import { RedisHashBackend } from './redis-backend';
-import redis from 'redis-mock';
 import { RedisClient } from 'redis';
+import redis from 'redis-mock';
+import { RedisHashBackend } from './redis-backend';
 
 export default class RedisMockBackend extends RedisHashBackend {
 
-  protected async getNewRedisClient(): Promise<RedisClient> {
-    return redis.createClient();
-  }
-
   public async flushDb(): Promise<void> {
     const client = await this.getNewRedisClient();
-    return await new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       client.flushdb((err) => {
         if (err) {
           reject(err);
@@ -19,5 +15,9 @@ export default class RedisMockBackend extends RedisHashBackend {
         }
       });
     });
+  }
+
+  protected async getNewRedisClient(): Promise<RedisClient> {
+    return redis.createClient();
   }
 }

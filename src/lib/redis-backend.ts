@@ -2,8 +2,8 @@ import redis, { RedisClient } from 'redis';
 import { Backend, IncreaseQuery, IndType, ValType } from './backend';
 
 export class RedisCredentials {
-  host: string;
-  port: number;
+  public readonly host: string;
+  public readonly port: number;
 }
 
 export const REDIS_LOCK_ERROR = "REDIS_LOCK_ERROR";
@@ -20,14 +20,14 @@ export class RedisHashBackend implements Backend {
     public redisKey: string) {
   }
 
-  async read(queries: IndType[]): Promise<ValType[]> {
-    if (queries.length == 0) return [];
+  public async read(queries: readonly IndType[]): Promise<readonly ValType[]> {
+    if (queries.length == 0) { return []; }
     const res = await this.atomic(null, queries);
     return res.map(v => ((v == null)? 0 : v));
   }
 
-  async increase(queries: IncreaseQuery[]): Promise<(number|null)[]> {
-    return await this.atomic(queries, null);
+  public async increase(queries: readonly IncreaseQuery[]): Promise<ReadonlyArray<number|null>> {
+    return this.atomic(queries, null);
   }
 
   protected async getNewRedisClient(): Promise<RedisClient> {
@@ -38,21 +38,23 @@ export class RedisHashBackend implements Backend {
       this.redisCredentials.host);
   }
 
-  private async atomic(incQueries: IncreaseQuery[] | null, 
-    readQueries: IndType[] | null): Promise< (ValType|null) []> {
-    let client = await this.getNewRedisClient();
+  private async atomic(incQueries: readonly IncreaseQuery[] | null, 
+    readQueries: readonly IndType[] | null): Promise< ReadonlyArray<ValType|null>> {
+    const client = await this.getNewRedisClient();
 
-    return await new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const multi = client.multi();
 
-      if (incQueries != null) for (const incQuery of incQueries) {
+      if (incQueries != null) { for (const incQuery of incQueries) {
         multi.hincrby(this.redisKey, 
           incQuery.index.toString(), incQuery.val);
       }
+      }
 
-      if (readQueries != null) for (const index of readQueries) {
+      if (readQueries != null) { for (const index of readQueries) {
         multi.hget(this.redisKey, 
           index.toString());
+      }
       }
 
       multi
