@@ -1,4 +1,4 @@
-import { Backend, Int, IncreaseQuery } from "./backend";
+import { Backend, IndType, IncreaseQuery, ValType } from "./backend";
 
 /* 
 Inspiration from:
@@ -12,8 +12,8 @@ export default class BinaryIndexedTree {
     this.backend = backend;
   }
 
-  private getReadQueries(ind: number) : number[] {
-    const queries: number[] = [];
+  private getReadQueries(ind: IndType) : IndType[] {
+    const queries: IndType[] = [];
     for (; ind > 0; ind -= (ind & (-ind))) {
       queries.push(ind);
     }
@@ -25,21 +25,21 @@ export default class BinaryIndexedTree {
    * Time: O(log(n))
    * @param ind 0-indexed
    */
-  async query(ind: Int) : Promise<number> {
+  async query(ind: IndType) : Promise<ValType> {
     ind++;
     const r = await this.backend.read(this.getReadQueries(ind));
     return r.reduce((ac, val) => ac + val);
   }
 
   /**
-   * Updates the ind-th element in the 'array'
-   * Note: if ind is greater than or equal backend.maximum this function won't do anything
+   * Increases the ind-th element in the 'array' in @param val
+   * Note: if @param ind is greater than or equal backend.maximum this function won't do anything
    * Time: O(log(n))
    * @param ind 0-indexed
    * @param val integer number
    */
-  async update(ind: Int, val: number) {
-    let queries: IncreaseQuery[] = [];
+  async update(ind: IndType, val: ValType) {
+    const queries: IncreaseQuery[] = [];
     ind++;
     for (; ind <= this.backend.maximum; ind += (ind & (-ind))) {
       queries.push(new IncreaseQuery(ind, val));
@@ -50,10 +50,11 @@ export default class BinaryIndexedTree {
   /**
    * If "to" is less than or equal "from" it returns zero
    * Both indexed from zero.
+   * Time: O(log(n))
    * @param from Inclusive
    * @param to Exclusive
    */
-  async rangeQuery(from: Int, to: Int): Promise<number> {
+  async rangeQuery(from: IndType, to: IndType): Promise<ValType> {
     if (to <= from) return 0;
 
     const fromReadQueries = this.getReadQueries(from);

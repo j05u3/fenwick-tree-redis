@@ -1,5 +1,5 @@
 import redis, { RedisClient } from 'redis';
-import { Backend, IncreaseQuery } from './backend';
+import { Backend, IncreaseQuery, IndType, ValType } from './backend';
 
 export class RedisCredentials {
   host: string;
@@ -7,21 +7,20 @@ export class RedisCredentials {
 }
 
 export const REDIS_LOCK_ERROR = "REDIS_LOCK_ERROR";
-export const REDIS_MULTI_RESULT_NOT_OK = "REDIS_MULTI_RESULT_NOT_OK";
 
 /**
- * We use MULTI with opening a new client each time (on each read and increase operation) 
+ * We use MULTI and open a new client every time (on each read and increase operation) 
  * because we want to ensure atomicity.
  */
 export class RedisHashBackend implements Backend {
 
   constructor (
     private redisCredentials: RedisCredentials | null, 
-    public maximum: number, 
+    public maximum: IndType, 
     public redisKey: string) {
   }
 
-  async read(queries: number[]): Promise<number[]> {
+  async read(queries: IndType[]): Promise<ValType[]> {
     if (queries.length == 0) return [];
     const res = await this.atomic(null, queries);
     return res.map(v => ((v == null)? 0 : v));
@@ -40,7 +39,7 @@ export class RedisHashBackend implements Backend {
   }
 
   private async atomic(incQueries: IncreaseQuery[] | null, 
-    readQueries: number[] | null): Promise< (number|null) []> {
+    readQueries: IndType[] | null): Promise< (ValType|null) []> {
     let client = await this.getNewRedisClient();
 
     return await new Promise((resolve, reject) => {

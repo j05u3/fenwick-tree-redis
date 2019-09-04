@@ -8,3 +8,8 @@ Binary Indexed Tree (aka Fenwick Tree) implementation using a Redis backend
 `npm run watch`
 
 Once in a while I needed to `rm -rf build` to be able to run again. 
+
+## TODOs
+
+* Write tests with a real redis backend
+* Stress tests (benchmarks(?))
