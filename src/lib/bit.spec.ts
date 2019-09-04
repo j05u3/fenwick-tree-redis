@@ -3,9 +3,8 @@ import test from 'ava';
 import BinaryIndexedTree from './bit';
 import RedisMockBackend from './redis-mock-backend';
 
-
 test('tests', async t => {
-  const backend = new RedisMockBackend(null, 1e6, "dummyKey");
+  const backend = new RedisMockBackend(null, 1e6, 'dummyKey');
 
   await backend.flushDb();
   const bit = new BinaryIndexedTree(backend);
@@ -18,7 +17,6 @@ test('tests', async t => {
   await bit.update(11, 3);
   t.deepEqual(await bit.query(1), 12);
 
-  
   await bit.update(13, 10);
   t.deepEqual(await bit.rangeQuery(0, 14), 25);
   t.deepEqual(await bit.rangeQuery(11, 14), 13);
@@ -31,7 +29,6 @@ test('tests', async t => {
   t.deepEqual(await bit.query(1e6), 25);
   t.deepEqual(await bit.query(1e6 + 1), 25);
 
-
   await bit.update(1e6 - 1, 20);
   t.deepEqual(await bit.rangeQuery(1e6 - 1, 1e6), 20);
 
@@ -39,4 +36,4 @@ test('tests', async t => {
   // bit.update = async function(ind: number, val: number) {
   //   return;
   // }
-})
+});
