@@ -3,7 +3,7 @@ import { IncreaseQuery } from './backend';
 import RedisMockBackend from './redis-mock-backend';
 
 
-async function getMockBackendInstance() {
+async function getMockBackendInstance(): Promise<RedisMockBackend> {
   const backend = new RedisMockBackend(null, 1e6, "dummyKey");
   // clearing db (it is needed because all tests run on the same db)
   await backend.flushDb();
@@ -24,7 +24,8 @@ async function getBackendWithSomeValues(): Promise<RedisMockBackend> {
 test('tests', async t => {
   // had to put all tests here because I couldn't find a way to make 
   // redis-mock use a different and clean db for each test
-  let backend = await getMockBackendInstance();
+  let backend: RedisMockBackend;
+  backend = await getMockBackendInstance();
   const r = await backend.increase([
     new IncreaseQuery(0, 11),
     new IncreaseQuery(1, 18),

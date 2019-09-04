@@ -34,4 +34,9 @@ test('tests', async t => {
 
   await bit.update(1e6 - 1, 20);
   t.deepEqual(await bit.rangeQuery(1e6 - 1, 1e6), 20);
+
+  // TS-Lint helps preventing the next situation:
+  // bit.update = async function(ind: number, val: number) {
+  //   return;
+  // }
 })

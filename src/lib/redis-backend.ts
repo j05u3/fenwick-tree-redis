@@ -1,9 +1,9 @@
 import redis, { RedisClient } from 'redis';
 import { Backend, IncreaseQuery, IndType, ValType } from './backend';
 
-export class RedisCredentials {
-  public readonly host: string;
-  public readonly port: number;
+export interface RedisCredentials {
+  readonly host: string;
+  readonly port: number;
 }
 
 export const REDIS_LOCK_ERROR = "REDIS_LOCK_ERROR";
@@ -21,7 +21,7 @@ export class RedisHashBackend implements Backend {
   }
 
   public async read(queries: readonly IndType[]): Promise<readonly ValType[]> {
-    if (queries.length == 0) { return []; }
+    if (queries.length === 0) { return []; }
     const res = await this.atomic(null, queries);
     return res.map(v => ((v == null)? 0 : v));
   }
@@ -45,37 +45,39 @@ export class RedisHashBackend implements Backend {
     return new Promise((resolve, reject) => {
       const multi = client.multi();
 
-      if (incQueries != null) { for (const incQuery of incQueries) {
-        multi.hincrby(this.redisKey, 
-          incQuery.index.toString(), incQuery.val);
-      }
+      if (incQueries != null) {
+        for (const incQuery of incQueries) {
+          multi.hincrby(this.redisKey, 
+            incQuery.index.toString(), incQuery.val);
+        }
       }
 
-      if (readQueries != null) { for (const index of readQueries) {
-        multi.hget(this.redisKey, 
-          index.toString());
-      }
+      if (readQueries != null) {
+        for (const index of readQueries) {
+          multi.hget(this.redisKey, 
+            index.toString());
+        }
       }
 
       multi
       .exec((redisErr, results) => {
         /**
-          * If err is null, it means Redis successfully attempted 
-          * the operation.
-          */
+         * If err is null, it means Redis successfully attempted 
+         * the operation.
+         */
         if (redisErr) {
           reject(redisErr);
           return;
         }
         
         /**
-          * If results === null, it means that a concurrent redisClient
-          * changed the key while we were processing it and thus 
-          * the execution of the MULTI command was not performed.
-          * 
-          * NOTICE: Failing an execution of MULTI is not considered
-          * an error. So you will have err === null and results === null
-          */
+         * If results === null, it means that a concurrent redisClient
+         * changed the key while we were processing it and thus 
+         * the execution of the MULTI command was not performed.
+         * 
+         * NOTICE: Failing an execution of MULTI is not considered
+         * an error. So you will have err === null and results === null
+         */
         if (results === null) {
           reject(REDIS_LOCK_ERROR);
           return;

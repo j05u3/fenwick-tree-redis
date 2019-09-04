@@ -33,7 +33,7 @@ export default class BinaryIndexedTree {
    * @param ind 0-indexed
    * @param val integer number
    */
-  public async update(ind: IndType, val: ValType) {
+  public async update(ind: IndType, val: ValType): Promise<void> {
     const queries: IncreaseQuery[] = [];
     ind++;
     for (; ind <= this.backend.maximum; ind += (ind & (-ind))) {

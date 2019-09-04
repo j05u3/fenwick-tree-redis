@@ -16,13 +16,13 @@ export interface Backend {
    * executing these read queries.
    * @param queries 
    */
-  read(queries: readonly IndType[]): Promise<readonly ValType[]>;
+  readonly read: (queries: readonly IndType[]) => Promise<readonly ValType[]>;
 
   /**
    * The backend must make sure that each increase operation is atomic
    * @param queries 
    */
-  increase(queries: readonly IncreaseQuery[]): Promise<readonly any[]>;
+  readonly increase: (queries: readonly IncreaseQuery[]) => Promise<readonly any[]>;
 }
 
 export class IncreaseQuery {
