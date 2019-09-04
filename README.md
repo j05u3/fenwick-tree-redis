@@ -3,7 +3,9 @@
 [![NPM version](https://img.shields.io/npm/v/fenwick-tree-redis.svg)](https://www.npmjs.com/package/fenwick-tree-redis)
 [![CircleCI](https://img.shields.io/circleci/project/github/j05u3/fenwick-tree-redis.svg)](https://circleci.com/gh/j05u3/fenwick-tree-redis)
 
-Binary Indexed Tree (aka Fenwick Tree) implementation with a Redis backend
+Binary Indexed Tree (aka Fenwick Tree) implementation with a Redis backend.
+
+Usage examples: [here](./src/lib/bit.spec.ts#11)
 
 [Generated docs](https://j05u3.github.io/fenwick-tree-redis/)
 
@@ -19,5 +21,4 @@ Once in a while I needed to `rm -rf build` to be able to run again.
 
 * Write tests with a real redis backend
 * Stress tests (benchmarks(?))
-* Check why `npm test` fails 
-* Remove sha.js dependency
+* Check why `npm test` fails

@@ -5,7 +5,7 @@
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
   "module": "build/module/index.js",
-  "repository": "https://github.com/YOUR_GITHUB_USER_NAME/fenwick-tree-redis",
+  "repository": "https://github.com/j05u3/fenwick-tree-redis",
   "license": "MIT",
   "keywords": [],
   "scripts": {
@@ -51,8 +51,7 @@
   },
   "dependencies": {
     "@types/redis": "^2.8.13",
-    "redis": "^2.8.0",
-    "sha.js": "^2.4.11"
+    "redis": "^2.8.0"
   },
   "devDependencies": {
     "@bitjson/npm-scripts-info": "^1.0.0",
