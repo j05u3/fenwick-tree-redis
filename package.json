@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "@types/redis": "^2.8.13",
-    "redis": "^2.8.0"
+    "redis": "^3.1.1"
   },
   "devDependencies": {
     "@bitjson/npm-scripts-info": "^1.0.0",
